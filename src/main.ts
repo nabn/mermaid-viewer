@@ -13,37 +13,26 @@ let autoPreview = true;
 let lastSVG = '';
 let timer: ReturnType<typeof setTimeout>;
 
-function saved(key: string) {
-  try { return localStorage.getItem(key); } catch { return null; }
-}
-function save(key: string, value: string) {
-  try { localStorage.setItem(key, value); } catch { /* Theme persistence is optional. */ }
-}
-
 const examples: Record<string, string> = {
   flowchart: `flowchart LR
-  A([An idea]) --> B[Make a little space]
-  B --> C{See the big picture}
-  C -->|Refine| B
-  C -->|Ready| D([Bring it to life])`,
+  A[Request] --> B{Cached?}
+  B -->|Yes| C[Response]
+  B -->|No| D[Fetch]
+  D --> C`,
   sequence: `sequenceDiagram
-  participant You
-  participant Meridian
-  You->>Meridian: Paste a Mermaid diagram
-  Meridian-->>You: A clearer picture
-  You->>Meridian: Make a small change
-  Meridian-->>You: Updated, instantly`,
+  participant Client
+  participant Server
+  Client->>Server: GET /items
+  Server-->>Client: 200 OK`,
   mindmap: `mindmap
-  root((A good idea))
-    Explore
-      Ask questions
-      Connect the dots
-    Create
-      Start small
-      Keep it simple
-    Share
-      Tell a story
-      Make it clear`,
+  root((Project))
+    Client
+      Views
+      State
+    Server
+      API
+      Database
+    Tests`,
 };
 
 function setEditing(value: boolean) {
@@ -51,7 +40,7 @@ function setEditing(value: boolean) {
   $('editor').hidden = !value;
   workspace.classList.toggle('editing', value);
   toggle.setAttribute('aria-expanded', String(value));
-  $('toggle-label').textContent = value ? 'View diagram' : 'Edit source';
+  $('toggle-label').textContent = value ? 'VIEW' : 'SOURCE';
   if (value) source.focus();
   else diagram.focus();
 }
@@ -78,12 +67,12 @@ function update(allowFlip = false) {
     workspace.classList.add('empty');
     exportButton.disabled = true;
     lastSVG = '';
-    $('status').textContent = 'Ready when you are';
+    $('status').textContent = 'Paste Mermaid syntax.';
     return;
   }
   try {
     const result = render(text, {
-      fontFamily: 'system-ui, sans-serif', fontSize: 15, padding: 32,
+      fontFamily: 'monospace', fontFamilyMono: 'monospace', fontSize: 14, padding: 24,
       autoDirection: false, images: false, links: false,
     });
     diagram.innerHTML = result.svg;
@@ -101,9 +90,9 @@ function update(allowFlip = false) {
     const message = error instanceof Error ? error.message : String(error);
     errorBox.textContent = message;
     errorBox.hidden = false;
-    $('status').textContent = lastSVG ? '● Syntax needs attention · showing last valid diagram' : '● Syntax needs attention';
+    $('status').textContent = lastSVG ? 'Syntax error. Showing last valid diagram.' : 'Syntax error.';
     if (!editing) {
-      $('preview-error').textContent = 'This source needs a small fix. Open Edit source to see the details.';
+      $('preview-error').textContent = 'Syntax error. Open SOURCE for details.';
       $('preview-error').hidden = false;
     }
   }
@@ -135,7 +124,7 @@ document.addEventListener('keydown', (event) => {
   }
 });
 $('new').addEventListener('click', () => {
-  if (source.value.trim() && !window.confirm('Start a new diagram? This replaces your current local draft.')) return;
+  if (source.value.trim() && !window.confirm('Clear source?')) return;
   clearTimeout(timer);
   source.value = '';
   autoPreview = true;
@@ -153,13 +142,14 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('[data-example
 
 function setTheme(theme: string) {
   document.documentElement.dataset.theme = theme;
-  $('theme').innerHTML = theme === 'dark' ? '☾ <span>Dark</span>' : '☀ <span>Light</span>';
+  $('theme').textContent = theme.toUpperCase();
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#111111' : '#ffffff');
   $('theme').setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`);
-  save('meridian-theme', theme);
 }
 $('theme').addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
-const initialTheme = saved('meridian-theme');
-setTheme(initialTheme === 'dark' ? 'dark' : 'light');
+const deviceTheme = window.matchMedia('(prefers-color-scheme: dark)');
+setTheme(deviceTheme.matches ? 'dark' : 'light');
+deviceTheme.addEventListener('change', event => setTheme(event.matches ? 'dark' : 'light'));
 
 exportButton.addEventListener('click', () => {
   if (!lastSVG) return;

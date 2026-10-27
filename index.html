@@ -3,41 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f7f8f5" />
-    <title>Meridian — Mermaid viewer</title>
+    <meta name="theme-color" content="#ffffff" />
+    <title>Mermaid</title>
   </head>
   <body>
     <div id="app">
       <header class="toolbar">
-        <a class="brand" href="./" aria-label="Meridian home"><span class="brand-mark">⌘</span> meridian <span class="brand-caption">MERMAID VIEWER</span></a>
+        <a class="brand" href="./" aria-label="Mermaid home">MERMAID</a>
         <div class="actions">
-          <span class="local-badge"><i></i> Local only</span>
-          <button id="theme" class="theme-badge" aria-label="Switch to dark theme">☀ <span>Light</span></button>
-          <button id="new" class="quiet" title="Clear diagram and start again">New diagram</button>
-          <button id="export" class="quiet" disabled>↓ <span>Export SVG</span></button>
-          <button id="toggle" class="primary" aria-controls="editor" aria-expanded="true"><span aria-hidden="true">〈/〉</span> <span id="toggle-label">View diagram</span></button>
+          <button id="theme" aria-label="Switch to dark theme">LIGHT</button>
+          <button id="new" title="Clear source">CLEAR</button>
+          <button id="export" aria-label="Export SVG" disabled>SVG</button>
+          <button id="toggle" aria-label="Toggle source" aria-controls="editor" aria-expanded="true" aria-keyshortcuts="Meta+Enter Control+Enter"><span id="toggle-label">VIEW</span></button>
         </div>
       </header>
       <main id="workspace" class="workspace editing empty">
         <aside id="editor" class="editor">
-          <div class="panel-heading"><span>Diagram source</span><span class="file-type">.mmd</span></div>
-          <div class="editor-body"><div id="line-numbers" aria-hidden="true">1</div><textarea id="source" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Mermaid diagram source" placeholder="Paste your Mermaid syntax here…&#10;&#10;flowchart LR&#10;  A[An idea] --> B[Something great]"></textarea></div>
-          <div id="error" class="error" role="status" hidden></div>
-          <div class="editor-footer"><span id="line-count">1 line</span><span>⌘ / Ctrl + Enter to view</span></div>
+          <label class="panel-heading" for="source"><span class="paste-label">Paste Mermaid syntax.</span><span class="source-label">SOURCE</span></label>
+          <div class="source-box">
+            <div class="editor-body"><div id="line-numbers" aria-hidden="true">1</div><textarea id="source" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Mermaid diagram source" placeholder="flowchart LR&#10;  A --> B"></textarea></div>
+            <div id="error" class="error" role="status" hidden></div>
+            <div class="editor-meta"><span id="line-count">1 line</span><span>⌘ / Ctrl + Enter</span></div>
+          </div>
+          <div id="empty-state" class="examples"><span>Examples:</span><button data-example="flowchart">Flowchart</button><button data-example="sequence">Sequence</button><button data-example="mindmap">Mind map</button></div>
         </aside>
         <section class="canvas" aria-label="Diagram preview">
-          <div id="empty-state" class="empty-state">
-            <div class="diagram-glyph" aria-hidden="true"><span></span><b></b><span></span><b></b><span></span></div>
-            <p class="eyebrow">LESS SYNTAX. MORE CLARITY.</p>
-            <h1>A little space for<br>your big picture.</h1>
-            <p class="intro">Paste a Mermaid diagram. We’ll take care of the view.<br>Your source is always just a click away.</p>
-            <div class="examples"><span>Or start with an example</span><div><button data-example="flowchart">Flowchart ↗</button><button data-example="sequence">Sequence ↗</button><button data-example="mindmap">Mind map ↗</button></div></div>
-          </div>
           <div id="diagram" tabindex="0" aria-label="Rendered diagram" hidden></div>
           <div id="preview-error" class="preview-error" role="status" hidden></div>
         </section>
       </main>
-      <span id="status" class="sr-only" role="status">Ready when you are</span>
+      <span id="status" class="sr-only" role="status">Paste Mermaid syntax.</span>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

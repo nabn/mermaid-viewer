@@ -1,6 +1,6 @@
-# Meridian
+# Mermaid
 
-A local, diagram-first Mermaid viewer powered by [Pele](https://pele.run). Light theme by default, with a persistent dark-theme toggle.
+A minimal Mermaid viewer powered by [Pele](https://pele.run). Monochrome, with device-controlled light and dark themes.
 
 ## Run locally
 
@@ -16,15 +16,15 @@ Open http://127.0.0.1:5173 (or the port Vite prints).
 ## Use
 
 - Paste Mermaid syntax, including a fenced `mermaid` code block. The first valid diagram automatically opens in the viewer after a short pause.
-- Click **Edit source** to open the editor alongside the diagram. Changes update live without closing the editor.
-- Click **View diagram**, or press **⌘/Ctrl + Enter**, to toggle the editor.
+- Click **SOURCE** to open the editor alongside the diagram. Changes update live without closing the editor.
+- Click **VIEW**, or press **⌘/Ctrl + Enter**, to toggle the editor.
 - Invalid source shows an error while preserving the last valid diagram.
-- Use **Light / Dark** in the canvas corner to switch themes.
+- The page follows your device theme and updates when it changes. Use **LIGHT / DARK** in the header for a temporary override; reloading returns to your device setting.
 - Diagrams render inline at their natural size, shrinking to fit narrow pages. Tall diagrams scroll with the page, with no clipped canvas or separate preview window. Use browser zoom to enlarge the page.
-- **Export SVG** downloads the last valid diagram with the current theme embedded.
-- **New diagram** clears the current draft after confirmation.
+- **SVG** downloads the last valid diagram with the current theme embedded.
+- **CLEAR** clears the current draft after confirmation.
 
-Every page load starts fresh. Diagram source stays in memory only and is never saved to local storage. Previously stored drafts are removed on load. Only your theme preference is remembered. There is no server-side storage, analytics, account, or remote font. Diagram images and links are disabled to avoid diagram-triggered network requests and navigation. This is a Mermaid diagram viewer, not a general Markdown document renderer.
+Every page load starts fresh. Diagram source stays in memory only and is never saved to local storage. Previously stored drafts are removed on load. Theme overrides are not saved. There is no server-side storage, analytics, account, or remote font. Diagram images and links are disabled to avoid diagram-triggered network requests and navigation. This is a Mermaid diagram viewer, not a general Markdown document renderer.
 
 ## GitHub Pages
 
