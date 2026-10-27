@@ -39,6 +39,25 @@ test('shows a minimal input and examples on desktop and mobile', async ({ page }
   await page.screenshot({ path: 'test-results/minimal-mobile.png', fullPage: true });
 });
 
+test('loads bundled regular and bold fonts without a local installation', async ({ page }) => {
+  const fonts: string[] = [];
+  page.on('response', response => {
+    if (response.url().endsWith('.woff2') && response.ok()) fonts.push(response.url());
+  });
+  await page.goto('/');
+  const loaded = await page.evaluate(async () => {
+    const regular = await document.fonts.load('13px "Tight Mono"');
+    const bold = await document.fonts.load('700 13px "Tight Mono"');
+    return [regular.length, bold.length];
+  });
+  expect(loaded).toEqual([1, 1]);
+  expect(fonts.some(url => url.includes('tight-mono-regular'))).toBe(true);
+  expect(fonts.some(url => url.includes('tight-mono-bold'))).toBe(true);
+  await page.getByRole('button', { name: 'Flowchart' }).click();
+  await expect(page.locator('#diagram svg')).toBeVisible();
+  await expect(page.locator('body')).toHaveCSS('font-family', /"Tight Mono"/);
+});
+
 test('legacy drafts are removed instead of restored', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => localStorage.setItem('meridian-source', 'flowchart LR; A-->B'));

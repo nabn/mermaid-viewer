@@ -35,6 +35,20 @@ The Vite relative asset base supports project URLs such as `/mermaid-viewer/`.
 The public site processes diagrams locally in each visitor's browser. Diagram source
 is not persisted or uploaded to GitHub, and every page load starts empty.
 
+## Fonts
+
+Regular and bold WOFF2 files are bundled with the app; no local installation or
+third-party font service is needed. They use the user's tightened Maple Mono Normal
+NF glyphs and spacing, without subsetting. The distributed derivative is named
+**Tight Mono** to respect upstream's Reserved Font Name.
+
+Licenses: `public/fonts/OFL.txt` and `public/fonts/NERD-FONTS-LICENSE.txt`.
+To regenerate from the locally modified TTF files:
+
+```sh
+uv run scripts/build-fonts.py /path/to/MapleTight
+```
+
 ## Checks
 
 ```sh
