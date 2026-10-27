@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 const flowchart = 'flowchart LR\n  A[Hello] --> B[World]';
 
-test('paste to preview, explicitly edit live, preserve last valid diagram, and restore draft', async ({ page }) => {
+test('paste to preview, explicitly edit live, preserve last valid diagram, and start fresh on reload', async ({ page }) => {
   await page.goto('/');
   const source = page.getByRole('textbox', { name: 'Mermaid diagram source' });
   await source.fill(flowchart);
@@ -18,8 +18,18 @@ test('paste to preview, explicitly edit live, preserve last valid diagram, and r
   await source.fill(flowchart);
   await expect(page.locator('#error')).toBeHidden();
   await page.reload();
-  await expect(page.locator('#diagram')).toContainText('World');
-  await expect(page.locator('#editor')).toBeHidden();
+  await expect(source).toHaveValue('');
+  await expect(source).toBeVisible();
+  await expect(page.locator('#diagram')).toBeHidden();
+  expect(await page.evaluate(() => localStorage.getItem('meridian-source'))).toBeNull();
+});
+
+test('legacy drafts are removed instead of restored', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => localStorage.setItem('meridian-source', 'flowchart LR; A-->B'));
+  await page.reload();
+  await expect(page.getByRole('textbox')).toHaveValue('');
+  expect(await page.evaluate(() => localStorage.getItem('meridian-source'))).toBeNull();
 });
 
 test('theme changes both UI and diagram and survives reload', async ({ page }) => {
@@ -52,6 +62,22 @@ test('accepts fenced Mermaid and keyboard toggle', async ({ page }) => {
   await expect(page.locator('#editor')).toBeHidden();
   await page.keyboard.press('Control+Enter');
   await expect(page.getByRole('textbox')).toBeFocused();
+});
+
+test('tall diagrams render inline and scroll with the page without a footer', async ({ page }) => {
+  await page.goto('/');
+  const tall = 'flowchart TD\n' + Array.from({ length: 30 }, (_, i) => `  N${i}[Step ${i}] --> N${i + 1}[Step ${i + 1}]`).join('\n');
+  await page.getByRole('textbox').fill(tall);
+  await expect(page.locator('#editor')).toBeHidden();
+  const svg = page.locator('#diagram svg');
+  await expect(svg).toBeVisible();
+  const bounds = await svg.boundingBox();
+  expect(bounds!.height).toBeGreaterThan(1000);
+  await expect(page.locator('#workspace')).toHaveCSS('overflow', 'visible');
+  await expect(page.locator('#diagram')).toHaveCSS('overflow', 'visible');
+  await expect(page.locator('footer')).toHaveCount(0);
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
 });
 
 test('works on a narrow screen', async ({ page }) => {

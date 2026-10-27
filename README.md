@@ -20,11 +20,11 @@ Open http://127.0.0.1:5173 (or the port Vite prints).
 - Click **View diagram**, or press **⌘/Ctrl + Enter**, to toggle the editor.
 - Invalid source shows an error while preserving the last valid diagram.
 - Use **Light / Dark** in the canvas corner to switch themes.
-- Use the zoom buttons, pinch, or ⌘/Ctrl + scroll to zoom. Drag to pan and use **Fit** to reset.
+- Diagrams render inline at their natural size, shrinking to fit narrow pages. Tall diagrams scroll with the page, with no clipped canvas or separate preview window. Use browser zoom to enlarge the page.
 - **Export SVG** downloads the last valid diagram with the current theme embedded.
 - **New diagram** clears the current draft after confirmation.
 
-Your latest source and theme are saved in this browser's local storage. There is no server-side storage, analytics, account, or remote font. Diagram images and links are disabled to avoid diagram-triggered network requests and navigation. Clearing browser data removes the saved draft. This is a Mermaid diagram viewer, not a general Markdown document renderer.
+Every page load starts fresh. Diagram source stays in memory only and is never saved to local storage. Previously stored drafts are removed on load. Only your theme preference is remembered. There is no server-side storage, analytics, account, or remote font. Diagram images and links are disabled to avoid diagram-triggered network requests and navigation. This is a Mermaid diagram viewer, not a general Markdown document renderer.
 
 ## GitHub Pages
 
@@ -32,9 +32,8 @@ The included `.github/workflows/pages.yml` builds and deploys on pushes to `main
 In your GitHub repository, select **Settings → Pages → Source → GitHub Actions**.
 The Vite relative asset base supports project URLs such as `/mermaid-viewer/`.
 
-The public site still processes diagrams locally in each visitor's browser. Drafts
-are stored per browser and origin, not uploaded to GitHub or shared with other visitors.
-Localhost drafts do not automatically transfer to the hosted site.
+The public site processes diagrams locally in each visitor's browser. Diagram source
+is not persisted or uploaded to GitHub, and every page load starts empty.
 
 ## Checks
 

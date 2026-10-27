@@ -1,4 +1,4 @@
-import { render, enableZoom, type Zoom } from 'pele';
+import { render } from 'pele';
 import './style.css';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -11,15 +11,13 @@ const toggle = $('toggle');
 let editing = true;
 let autoPreview = true;
 let lastSVG = '';
-let zoom: Zoom | undefined;
 let timer: ReturnType<typeof setTimeout>;
-let storageAvailable = true;
 
 function saved(key: string) {
-  try { return localStorage.getItem(key); } catch { storageAvailable = false; return null; }
+  try { return localStorage.getItem(key); } catch { return null; }
 }
 function save(key: string, value: string) {
-  try { localStorage.setItem(key, value); } catch { storageAvailable = false; }
+  try { localStorage.setItem(key, value); } catch { /* Theme persistence is optional. */ }
 }
 
 const examples: Record<string, string> = {
@@ -56,7 +54,6 @@ function setEditing(value: boolean) {
   $('toggle-label').textContent = value ? 'View diagram' : 'Edit source';
   if (value) source.focus();
   else diagram.focus();
-  requestAnimationFrame(() => zoom?.refresh());
 }
 
 function updateLineNumbers() {
@@ -71,21 +68,16 @@ function normalize(value: string) {
 
 function update(allowFlip = false) {
   const text = normalize(source.value);
-  save('meridian-source', source.value);
   updateLineNumbers();
   errorBox.hidden = true;
   $('preview-error').hidden = true;
   if (!text) {
-    zoom?.destroy();
-    zoom = undefined;
     diagram.replaceChildren();
     diagram.hidden = true;
     $('empty-state').hidden = false;
-    $('zoom-controls').hidden = true;
     workspace.classList.add('empty');
     exportButton.disabled = true;
     lastSVG = '';
-    $('diagram-type').textContent = 'YOUR CANVAS';
     $('status').textContent = 'Ready when you are';
     return;
   }
@@ -94,17 +86,13 @@ function update(allowFlip = false) {
       fontFamily: 'system-ui, sans-serif', fontSize: 15, padding: 32,
       autoDirection: false, images: false, links: false,
     });
-    zoom?.destroy();
     diagram.innerHTML = result.svg;
     diagram.hidden = false;
     $('empty-state').hidden = true;
-    $('zoom-controls').hidden = false;
     workspace.classList.remove('empty');
     lastSVG = result.svg;
     exportButton.disabled = false;
-    $('diagram-type').textContent = result.type.toUpperCase();
-    $('status').textContent = storageAvailable ? '● All changes saved locally' : '● Preview updated · browser storage unavailable';
-    zoom = enableZoom(diagram, { always: true, controls: false, maxScale: 5 });
+    $('status').textContent = 'Preview updated';
     if (allowFlip && autoPreview) {
       autoPreview = false;
       setEditing(false);
@@ -162,9 +150,6 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('[data-example
     update(true);
   });
 }
-$('zoom-in').addEventListener('click', () => zoom?.zoomBy(1.25));
-$('zoom-out').addEventListener('click', () => zoom?.zoomBy(0.8));
-$('fit').addEventListener('click', () => zoom?.reset());
 
 function setTheme(theme: string) {
   document.documentElement.dataset.theme = theme;
@@ -190,6 +175,6 @@ exportButton.addEventListener('click', () => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 
-source.value = saved('meridian-source') ?? '';
+try { localStorage.removeItem('meridian-source'); } catch { /* Clear legacy drafts when storage is available. */ }
+source.value = '';
 update();
-if (lastSVG) { autoPreview = false; setEditing(false); }
