@@ -155,7 +155,7 @@ exportButton.addEventListener('click', () => {
   if (!lastSVG) return;
   const svg = new DOMParser().parseFromString(lastSVG, 'image/svg+xml').documentElement;
   const styles = getComputedStyle(diagram);
-  const properties = ['bg', 'fg', 'muted', 'line', 'surface', 'surface-alt', 'border', 'accent', 'critical', 'error', ...Array.from({ length: 8 }, (_, i) => `series-${i + 1}`)];
+  const properties = ['bg', 'fg', 'muted', 'line', 'surface', 'surface-alt', 'border', 'accent', 'critical', 'error', 'radius', ...Array.from({ length: 8 }, (_, i) => `series-${i + 1}`)];
   svg.setAttribute('style', properties.map(name => `--pele-${name}:${styles.getPropertyValue(`--pele-${name}`)}`).join(';') + `;background:${styles.getPropertyValue('--pele-bg')}`);
   const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' }));
   const link = document.createElement('a');
