@@ -72,7 +72,7 @@ function update(allowFlip = false) {
   }
   try {
     const result = render(text, {
-      fontFamily: 'monospace', fontFamilyMono: 'monospace', fontSize: 14, padding: 24,
+      fontFamily: getComputedStyle(diagram).fontFamily, fontFamilyMono: getComputedStyle(diagram).fontFamily, fontSize: 14, padding: 24,
       autoDirection: false, images: false, links: false,
     });
     diagram.innerHTML = result.svg;
@@ -168,3 +168,4 @@ exportButton.addEventListener('click', () => {
 try { localStorage.removeItem('meridian-source'); } catch { /* Clear legacy drafts when storage is available. */ }
 source.value = '';
 update();
+void document.fonts.ready.then(() => { if (lastSVG) update(); });

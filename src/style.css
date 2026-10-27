@@ -1,5 +1,17 @@
+@font-face {
+  font-family: 'Xenia';
+  src: local('xenia'), local('Xenia Regular'), local('xenia_regular');
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Xenia';
+  src: local('Xenia Bold'), local('xenia Bold'), local('xenia_bold');
+  font-style: normal;
+  font-weight: 700;
+}
 :root {
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-family: 'Xenia', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
   font-size: 13px;
   color-scheme: light;
   --page: #ffffff; --text: #111111; --muted: #666666; --border: #dddddd; --soft: #f2f2f2; --error: #b42318;
